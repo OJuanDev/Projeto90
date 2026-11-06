@@ -1,28 +1,37 @@
-# Projeto 90 — Firebase / Lume Edition
+# Projeto 90 — Minha evolução
 
-Painel mobile-first de treinos, alimentação, marmitas, compras e evolução em PWA com Firebase Auth + Firestore.
+PWA de acompanhamento de treinos, alimentação, marmitas, hábitos e medidas. Visual inspirado no Lume, com navegação responsiva e sincronização Firebase.
 
-## Publicação
+## Estrutura
 
-1. Publique todos os arquivos da pasta na raiz de um site HTTPS (Vercel, Netlify etc.). Não abra o HTML via `file://`.
-2. No console Firebase, projeto `projeto90-356ea`, habilite **Authentication > Sign-in method > E-mail/Senha** e, se quiser, **Google**.
-3. Adicione seu domínio publicado em **Authentication > Settings > Authorized domains**.
-4. Crie o **Cloud Firestore** e cole o conteúdo de `firestore.rules` em **Firestore Database > Regras > Publicar**.
-5. Faça login e teste criando uma medida. Entre com a mesma conta em outro aparelho para confirmar a sincronização.
+```text
+index.html
+assets/
+  css/
+    base.css        # componentes e estrutura do app original
+    theme.css       # identidade refinada e responsividade
+  js/
+    app.js          # páginas, estado, exercícios, gráficos e backups
+    navigation.js   # tema, menu mobile e efeito Liquid Glass
+    firebase.js     # Firebase Auth e Firestore
+manifest.webmanifest
+sw.js
+icon-192.png
+icon-512.png
+icon.svg
+firestore.rules
+```
 
-## Dados e sincronização
+## Publicar
 
-- Firestore: `users/{uid}/app/state` (documento individual por usuário), com regras de acesso por UID.
-- Cache local: `localStorage` em `projeto90.user.{uid}`, apenas para apoio. A nuvem é a fonte principal.
-- Ao entrar na primeira vez, se houver registros antigos `projeto90.v1`, o app pergunta se você deseja migrá-los para sua conta.
-- Exportar/importar JSON continua funcionando. Importar substitui o estado atual e sincroniza a cópia importada com a conta.
-- O aplicativo requer conexão para autenticação inicial e sincronizar alterações. A interface do PWA é armazenada em cache, mas fotos e SDK Firebase dependem de rede e não há garantia de uso offline integral.
-- Atualizações simultâneas em dois aparelhos usam a última gravação; faça backup periódico.
+Publique **todos** os arquivos em um servidor HTTPS, mantendo a estrutura de pastas. Para teste local, use `python -m http.server 8080` e abra `http://localhost:8080`. Abrir como `file://` não funciona corretamente para módulos, autenticação e PWA.
 
-## Imagens
+No Firebase Console, habilite Authentication (Email/Senha e Google), adicione o domínio da aplicação em *Authorized domains*, crie o Cloud Firestore e aplique as regras do arquivo `firestore.rules`. A configuração web já está em `assets/js/firebase.js`.
 
-Fotos ilustrativas carregadas do Unsplash por internet; não são fotos exatas das receitas nem fazem parte do ZIP. Para imagens offline, baixe fotos próprias/licenciadas, salve em `assets/` e substitua os endereços em `foodPhotos`.
+## Dados e atualizações
 
-## Segurança
+Os dados são armazenados por UID no Firestore; `localStorage` é usado como cache/apoio. O aplicativo mantém importação e exportação JSON. Faça backup antes de atualizações e não limpe o armazenamento local enquanto houver dados pendentes de sincronização.
 
-A `apiKey` do Firebase Web identifica o projeto e pode aparecer no código público. A proteção real são Authentication, regras do Firestore e restrições adequadas do projeto. Nunca coloque credenciais privadas ou chaves de serviço no frontend. Ative App Check se necessário. A regra acima permite ao usuário acessar somente seu documento.
+A navegação mobile mostra 5 seções. **Ajustes** fica no botão de engrenagem do topo. O efeito de distorção do Liquid Glass é aplicado só durante o arraste.
+
+As fotos das refeições são ilustrações remotas e exigem internet para carregar. O app shell e as telas ficam em cache no Service Worker; login e sincronização exigem conexão.
